@@ -1,0 +1,9 @@
+# CODEOWNERS — jolarca-consent
+#
+# ADR-0004 R4: no mission-platform (journeyoflife-org / jol-infrastructure)
+# references are permitted in a marketplace-fleet repository.
+# jolarca-dev has zero teams (D-10); @JourneyOfLife is the sole operator and
+# therefore the sole code owner. Replace with real jolarca-dev teams when the
+# second operator onboards (the D-04 exit trigger).
+
+* @JourneyOfLife

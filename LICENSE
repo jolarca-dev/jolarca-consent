@@ -1,0 +1,41 @@
+Copyright (c) 2026 Jolarca (jolarca-dev). All Rights Reserved.
+
+PROPRIETARY AND CONFIDENTIAL — NO LICENCE IS GRANTED.
+
+This repository and its contents, including all source code, documentation,
+configuration, schemas and any derived works (collectively, the "Software"),
+are the proprietary and confidential property of Jolarca.
+
+The Software is published in source-available form for the purposes of
+transparency, security review and compliance assurance under SOC 2 Type II,
+GDPR, ISO 27001:2022 and PCI-DSS 4.0. Publication here grants NO licence,
+express or implied, to use, copy, modify, merge, publish, distribute,
+sublicense, sell, or create derivative works of the Software, in whole or in
+part, except where such activity is a mandatory right under applicable law
+(for example the rights of quotation, interoperability, or an express
+statutory exception), or except as expressly authorised in advance and in
+writing by Jolarca.
+
+Without limiting the foregoing, this repository is deliberately NOT released
+under any Open Source Initiative licence. It is not licensed under the GNU
+Affero General Public License (AGPL-3.0) or any other copyleft licence. The
+AGPL-3.0 licence applies only to the flagship `jolarca` application, and that
+scope does not extend to this repository. See the jolarca-dev fleet licence
+policy at policy/repo-defaults.yml#repository_defaults and
+policy/compliance-gates.yml#license_check.
+
+Unauthorised copying, distribution, modification or use of the Software, via
+any medium, is strictly prohibited and may result in severe civil and criminal
+penalties.
+
+Third-party components retain their own licences. Inbound dependencies are
+constrained to the approved set in policy/compliance-gates.yml#license_check
+and copyleft dependencies (GPL-2.0, GPL-3.0, AGPL-3.0, SSPL-1.0) are denied by
+the dependency-review gate. Nothing in this notice grants you any right in
+those third-party components; see their own licence terms.
+
+Trade secrets, security disclosures and vulnerability reports: contact
+security@jolarca.com as described in SECURITY.md. Do not open a public issue.
+
+For licence enquiries, or to request written permission to use any part of the
+Software, contact: legal@jolarca.com

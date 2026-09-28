@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint (ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Ruff check
+        run: ruff check .
+      - name: Ruff format check
+        run: ruff format --check .
+
+  types:
+    name: Type check (mypy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Mypy strict
+        # Audit finding A-11 (2026-09-28): this ran `mypy --strict .`, and an
+        # explicit path argument OVERRIDES [tool.mypy].files — so the scope CI
+        # actually checked was governed only by `exclude`, and the declared
+        # `files` list was dead config. A reader of pyproject.toml would believe
+        # the consent registry of record and the SHA-256 hash chain were
+        # type-checked; they were not. Running mypy with no path makes the
+        # declared scope authoritative, and brings both integrity-critical
+        # modules (ADR-0001, ADR-0002) under strict typing at zero errors.
+        run: mypy --strict
+
+  test:
+    name: Test (pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Pytest
+        # Audit finding A-10 (2026-09-28): policy/compliance-gates.yml#code_quality
+        # mandates `pytest --cov --cov-fail-under=80`. pytest-cov is already a
+        # declared dev dependency and [tool.coverage.run] is already configured,
+        # but CI ran a bare `pytest`, so the coverage floor existed on paper only.
+        run: pytest --cov --cov-fail-under=80
+
+  smoke-check:
+    name: Repository smoke-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Smoke-check
+        run: python main.py

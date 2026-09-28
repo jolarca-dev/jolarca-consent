@@ -1,0 +1,50 @@
+name: Security
+
+# Audit finding A-01/L-20 (2026-09-28): this workflow triggered on `schedule`
+# and `workflow_dispatch` ONLY. repos/jolarca-consent.yml declares it as a
+# required pre-merge status check, and a check that cannot fire on a pull
+# request can never gate one — every PR would block forever while the control
+# looked fully configured. `pull_request` is therefore mandatory here.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    # Weekly on Monday at 07:00 UTC
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gitleaks:
+    name: Gitleaks (secret scanning)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      # Audit finding A-02/L-21a (2026-09-28): this step was pinned to
+      # gitleaks/gitleaks-action@4f9a10b3c1d3b4e5e5e5e5e5e5e5e5e5e5e5e5e5, a
+      # SHA that does not exist — GET /commits/<sha> returns HTTP 422 "No commit
+      # found for SHA". A fabricated pin passes review and fails at runtime, in
+      # CI, after the merge. The SHA below is the verified dereference of the
+      # annotated tag v2 (v2.3.9).
+      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  dependency-review:
+    name: Dependency review
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Audit finding A-08/L-21b (2026-09-28): was `@v4`, a mutable tag that can
+      # be force-moved, and carried no licence policy. policy/compliance-gates.yml
+      # #dependency_scan mandates this exact SHA (v5.0.0, verified to resolve) with
+      # fail_on_severity moderate and deny_licenses GPL/AGPL/SSPL.
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: moderate
+          deny-licenses: GPL-2.0, GPL-3.0, AGPL-3.0, SSPL-1.0

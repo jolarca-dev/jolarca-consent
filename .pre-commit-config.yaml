@@ -1,0 +1,58 @@
+# pre-commit configuration — jolarca-consent
+# Mirrors the checks documented in CONTRIBUTING.md and the Makefile `check` target.
+# Install:  pre-commit install
+# Run:      pre-commit run --all-files
+
+repos:
+  # ── General file hygiene ───────────────────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: ["--allow-multiple-documents"]
+      - id: check-added-large-files
+        args: ["--maxkb=512"]
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: forbid-submodules
+
+  # ── Secrets detection ──────────────────────────────────────────────────────
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+
+  # ── Python: ruff lint + format ─────────────────────────────────────────────
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.9
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+
+  # ── Python: mypy (strict) ──────────────────────────────────────────────────
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v2.3.1
+    hooks:
+      - id: mypy
+        args: [--strict]
+        # Mirror pyproject.toml [tool.mypy].files (audit finding A-11). The old
+        # regex ^(main\.py|scripts/|src/) excluded the consent registry of record
+        # and the SHA-256 append-only chain, so neither was type-checked locally
+        # either. `src/` does not exist in this repository.
+        files: ^(main\.py|scripts/|consent_registry/models\.py|consent_integrity/hash_chain\.py)$
+        # pre-commit runs mypy in an ISOLATED env, so Django and its stubs must be
+        # declared here or models.py fails to resolve `django.db`. hash_chain.py
+        # and scripts/ are pure stdlib and need nothing.
+        additional_dependencies: ["django>=5.2", "django-stubs>=5.0"]
+
+  # ── Markdown lint ──────────────────────────────────────────────────────────
+  - repo: local
+    hooks:
+      - id: markdownlint
+        name: markdownlint-cli2
+        entry: npx --yes markdownlint-cli2
+        language: system
+        types: [markdown]

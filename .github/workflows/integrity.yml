@@ -1,0 +1,57 @@
+name: Integrity
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-chain:
+    name: Verify Chain
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: jolarca_consent
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: jolarca_consent
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -e ".[dev]"
+          pip install psycopg[binary]
+
+      - name: Run migrations
+        env:
+          DATABASE_URL: postgresql://jolarca_consent:test@localhost:5432/jolarca_consent
+        run: |
+          python manage.py migrate
+
+      - name: Verify chain
+        env:
+          DATABASE_URL: postgresql://jolarca_consent:test@localhost:5432/jolarca_consent
+        run: |
+          python scripts/verify_chain.py --database-url "$DATABASE_URL"
