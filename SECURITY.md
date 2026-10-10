@@ -21,7 +21,7 @@
 
 ### How to report
 
-1. **Email:** security@journeyoflife.example (encrypted with PGP if possible)
+1. **Email:** security@jolarca.com (encrypted with PGP if possible)
 2. **Include:**
    - Description of the vulnerability
    - Steps to reproduce

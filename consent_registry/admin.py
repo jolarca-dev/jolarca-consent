@@ -9,8 +9,15 @@ from .models import ConsentRecord
 class ConsentRecordAdmin(admin.ModelAdmin):
     """Admin interface for ConsentRecord (read-only)."""
 
-    list_display = ["subject_id", "purpose", "consent_version", "granted", "timestamp"]
-    list_filter = ["purpose", "granted", "consent_version"]
+    list_display = [
+        "subject_id",
+        "purpose",
+        "consent_version",
+        "granted",
+        "timestamp",
+        "anonymized_at",
+    ]
+    list_filter = ["purpose", "granted", "consent_version", "anonymized_at"]
     search_fields = ["subject_id"]
     readonly_fields = [
         "id",
@@ -25,6 +32,7 @@ class ConsentRecordAdmin(admin.ModelAdmin):
         "prev_hash",
         "entry_hash",
         "created_at",
+        "anonymized_at",
     ]
 
     def has_add_permission(self, request):

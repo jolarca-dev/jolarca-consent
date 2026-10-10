@@ -79,6 +79,13 @@ class ConsentRecord(models.Model):
         help_text="SHA-256 hash of this record (canonical serialization)",
     )
     created_at = models.DateTimeField(auto_now_add=True, help_text="Record creation timestamp")
+    anonymized_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        db_index=True,
+        help_text="Set when the record is anonymized (retention TTL expired). "
+        "Once set, subject_id is an unlinkable UUID and ip_address/user_agent are cleared.",
+    )
 
     class Meta:
         """Model metadata."""

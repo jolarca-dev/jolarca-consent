@@ -95,6 +95,8 @@ files = [
     "main.py",
     "scripts",
     "consent_registry/models.py",
+    "consent_registry/retention.py",
+    "consent_registry/management/commands/anonymize_expired.py",
     "consent_integrity/hash_chain.py",
 ]
 warn_unreachable = true

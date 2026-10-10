@@ -14,7 +14,7 @@ This plan describes how to extract `ConsentRecord` from the marketplace applicat
 - [ ] API keys provisioned in Vault for `jolarca` and `jolarca-legal`
 - [ ] Database role created with `INSERT`-only privileges
 - [ ] Monitoring and alerting configured for chain verification failures
-- [ ] DPO and compliance lead have reviewed and approved the migration plan
+- [ ] Controller has reviewed and approved the migration plan (ADR-0004)
 
 ## Step 1: Dual-write (product writes to both old and new)
 

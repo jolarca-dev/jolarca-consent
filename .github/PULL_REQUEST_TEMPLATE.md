@@ -8,7 +8,7 @@
 - [ ] New feature (non-breaking change which adds functionality)
 - [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
 - [ ] Documentation update
-- [ ] Compliance-relevant change (requires DPO/compliance lead review)
+- [ ] Compliance-relevant change (requires controller review per ADR-0004)
 
 ## Compliance checklist (if applicable)
 

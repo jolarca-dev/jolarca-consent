@@ -52,8 +52,9 @@ class ConsentRecordSerializer(serializers.ModelSerializer):
             "prev_hash",
             "entry_hash",
             "created_at",
+            "anonymized_at",
         ]
-        read_only_fields = ["id", "prev_hash", "entry_hash", "created_at"]
+        read_only_fields = ["id", "prev_hash", "entry_hash", "created_at", "anonymized_at"]
 
     def validate_consent_version(self, value: str) -> str:
         """Validate consent_version format: CT-<purpose>-v<N>.

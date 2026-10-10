@@ -14,16 +14,14 @@
 
 | Role | Access | Notes |
 |---|---|---|
-| DPO | Admin | Required reviewer on all compliance artifacts |
-| Compliance lead | Admin | Required reviewer on all compliance artifacts |
-| Engineering leads | Write | Via PR only; branch protection enforced |
+| Controller (`@JourneyOfLife`) | Admin | Sole operator; holds all GDPR obligations (ADR-0004) |
 | Everyone else | None | Requests via issue, SLA: 2 business days |
 
 ## Structure
 
 | Path | Content |
 |---|---|
-| `docs/` | Architecture, threat model, migration plan, ADRs |
+| `docs/` | Architecture, threat model, migration plan, ADRs, DSAR runbook, breach runbook |
 | `src/` | Django project (consent_registry, consent_integrity apps) |
 | `scripts/` | Offline chain verifier, migration scripts, DSR export |
 | `tests/` | Unit, contract, integration, adversarial tests |
@@ -45,11 +43,12 @@
 |---|---|---|
 | Chain verification | Every deployment + daily schedule | `integrity.yml` |
 | Critical CVE fix | ≤ 7 days | `security.yml` |
-| DSR export | 30 days (GDPR Art. 12) | Manual + API |
+| DSR export | 30 days (GDPR Art. 12) | `docs/dsar-runbook.md` |
+| Breach notification | 72 hours (GDPR Art. 33) | `docs/breach-runbook.md` |
 
 ## Contacts
 
-- **DPO:** dpo@journeyoflife.example
+- **Controller:** `@JourneyOfLife` (ADR-0004: no DPO designated; sole operator holds all GDPR obligations)
 - Security incidents: see `SECURITY.md`
 
 ## Setup
@@ -75,4 +74,6 @@ make check                # full static verification gate
 - `docs/architecture.md` — system context and components
 - `docs/threat-model.md` — threats and mitigations
 - `docs/migration-plan.md` — cutover strategy
+- `docs/dsar-runbook.md` — cross-service DSAR procedure (Art. 15/16/17/18/20/21)
+- `docs/breach-runbook.md` — incident response and 72-hour notification (Art. 33/34)
 - `docs/adr/` — architecture decision records

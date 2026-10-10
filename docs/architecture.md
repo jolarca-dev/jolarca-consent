@@ -152,7 +152,7 @@ The database storing the append-only ledger.
 ### DSR export (Art. 15/20)
 
 ```
-1. DPO or automated system calls GET /api/v1/dsr/export?subject_id=<uuid>
+1. Controller or data subject calls GET /api/v1/dsr/export?subject_id=<uuid>
 2. Registry authenticates caller (elevated privilege required)
 3. Registry queries all records for the subject
 4. Registry returns a JSON export of the consent history

@@ -94,7 +94,7 @@ def verify_chain(database_url: str) -> int:
                 """
                     SELECT id, subject_id, purpose, consent_version, granted,
                            ip_address, user_agent, timestamp, revoked_at,
-                           prev_hash, entry_hash
+                           prev_hash, entry_hash, anonymized_at
                     FROM consent_registry_consentrecord
                     ORDER BY timestamp, id
                     """
@@ -121,16 +121,28 @@ def verify_chain(database_url: str) -> int:
                     revoked_at,
                     stored_prev_hash,
                     stored_entry_hash,
+                    anonymized_at,
                 ) = row
 
-                # Check prev_hash
+                # Check prev_hash (applies to ALL records, including anonymized)
                 if stored_prev_hash != prev_entry_hash:
                     errors.append(
                         f"Record {i} (id={record_id}): prev_hash mismatch. "
                         f"Expected {prev_entry_hash}, got {stored_prev_hash}"
                     )
 
-                # Recompute entry_hash
+                # For anonymized records, skip entry_hash recomputation.
+                # The stored entry_hash was computed over the original data
+                # before anonymization. The subject_id, ip_address, and
+                # user_agent have been replaced/cleared, so recomputing
+                # would produce a different hash. We trust the stored hash
+                # for anonymized records but still verify chain continuity
+                # via prev_hash (checked above).
+                if anonymized_at is not None:
+                    prev_entry_hash = stored_entry_hash
+                    continue
+
+                # Recompute entry_hash for non-anonymized records
                 record_data = {
                     "subject_id": str(subject_id),
                     "purpose": purpose,

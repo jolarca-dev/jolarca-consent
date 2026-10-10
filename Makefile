@@ -1,7 +1,7 @@
 # jolarca-consent — verification & integrity targets
 PYTHON ?= .venv/bin/python
 
-.PHONY: check lint format types test verify-chain help
+.PHONY: check lint format types test verify-chain anonymize-expired help
 
 ## Full static verification gate (must pass before merge).
 check: lint types test verify-chain
@@ -35,6 +35,11 @@ verify-chain:
 		echo "SKIP: verify-chain (DATABASE_URL not set)"; \
 	fi
 
+## Anonymize consent records past retention TTL.
+## Requires DATABASE_URL environment variable.
+anonymize-expired:
+	$(PYTHON) manage.py anonymize_expired
+
 ## Markdown lint (markdownlint-cli2 via npx).
 lint-docs:
 	npx --yes markdownlint-cli2 "**/*.md" "#.venv" "#node_modules" || true
@@ -54,11 +59,12 @@ lint-yaml:
 help:
 	@echo "jolarca-consent — verification & integrity targets"
 	@echo ""
-	@echo "  make check        Full static verification gate (must pass before merge)"
-	@echo "  make lint         Lint Python code (ruff check + format check)"
-	@echo "  make format       Format Python code (ruff format)"
-	@echo "  make types        Type check (mypy --strict)"
-	@echo "  make test         Run tests (pytest)"
-	@echo "  make verify-chain Verify hash chain (offline verifier, requires DATABASE_URL)"
-	@echo "  make lint-docs    Markdown lint (markdownlint-cli2 via npx)"
-	@echo "  make help         Show this message"
+	@echo "  make check              Full static verification gate (must pass before merge)"
+	@echo "  make lint               Lint Python code (ruff check + format check)"
+	@echo "  make format             Format Python code (ruff format)"
+	@echo "  make types              Type check (mypy --strict)"
+	@echo "  make test               Run tests (pytest)"
+	@echo "  make verify-chain       Verify hash chain (offline verifier, requires DATABASE_URL)"
+	@echo "  make anonymize-expired  Anonymize consent records past retention TTL"
+	@echo "  make lint-docs          Markdown lint (markdownlint-cli2 via npx)"
+	@echo "  make help               Show this message"

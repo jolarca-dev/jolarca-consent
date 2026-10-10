@@ -12,7 +12,7 @@ This repository has stricter rules than a typical code repository. The consent l
 ## Pull request requirements
 
 - PR template checklist fully answered.
-- CODEOWNERS approval: `docs/adr/`, `docs/architecture.md`, `docs/threat-model.md` require DPO + compliance lead.
+- CODEOWNERS approval: `docs/adr/`, `docs/architecture.md`, `docs/threat-model.md` require controller review (ADR-0004).
 - CI green: `make check` (ruff, mypy, pytest, markdownlint, YAML validation, chain verification).
 
 ## Branching
@@ -24,9 +24,9 @@ This repository has stricter rules than a typical code repository. The consent l
 
 | Label | Meaning | Extra requirement |
 |---|---|---|
-| `compliance:critical` | Alters the append-only guarantee or hash chain | DPO + compliance lead approval + adversarial test |
-| `compliance:high` | Alters consent schema or API contract | DPO approval |
-| `compliance:medium` | Alters retention or anonymization logic | Compliance lead approval |
+| `compliance:critical` | Alters the append-only guarantee or hash chain | Controller approval + adversarial test |
+| `compliance:high` | Alters consent schema or API contract | Controller approval |
+| `compliance:medium` | Alters retention or anonymization logic | Controller approval |
 
 ## Development workflow
 
