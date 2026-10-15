@@ -21,7 +21,7 @@
 
 ### How to report
 
-1. **Email:** security@jolarca.com (encrypted with PGP if possible)
+1. **Email:** journey4oflife+jolarca.security@gmail.com — interim alias; no PGP key is published in this repository, so encrypt only if one is supplied.
 2. **Include:**
    - Description of the vulnerability
    - Steps to reproduce
