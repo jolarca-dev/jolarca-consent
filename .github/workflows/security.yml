@@ -25,15 +25,51 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-      # Audit finding A-02/L-21a (2026-09-28): this step was pinned to
-      # gitleaks/gitleaks-action@4f9a10b3c1d3b4e5e5e5e5e5e5e5e5e5e5e5e5e5, a
-      # SHA that does not exist — GET /commits/<sha> returns HTTP 422 "No commit
-      # found for SHA". A fabricated pin passes review and fails at runtime, in
-      # CI, after the merge. The SHA below is the verified dereference of the
-      # annotated tag v2 (v2.3.9).
-      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # 2026-10-27 (D-90): this step used gitleaks/gitleaks-action, which now requires a
+      # PAID license; consent has no GITLEAKS_LICENSE secret (`gh secret list` -> none), so the
+      # job could never go green -- and the branch ruleset requires this context, so every PR in
+      # the repository was blocked. The gitleaks CLI is free and does the same scan.
+      #
+      # Kept from the original comment (A-02/L-21a): a fabricated action SHA passes review and
+      # fails at runtime. The checksum below is taken from the release's own
+      # gitleaks_8.30.1_checksums.txt, and the install refuses on mismatch -- `curl | tar` with no
+      # verification (as compliance-scan.yml in jolarca-control still does) is the weaker pattern.
+      - name: Install gitleaks 8.30.1 (checksum verified)
+        run: |
+          set -euo pipefail
+          GL_VERSION="8.30.1"
+          ASSET="gitleaks_${GL_VERSION}_linux_x64.tar.gz"
+          curl -sSLO "https://github.com/gitleaks/gitleaks/releases/download/v${GL_VERSION}/${ASSET}"
+          echo "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  ${ASSET}" | sha256sum --check --strict
+          tar xzf "${ASSET}" gitleaks
+          sudo install gitleaks /usr/local/bin
+          gitleaks version
+
+      # Negative control, before the real scan. "no leaks found" is worthless if the scanner
+      # loaded zero rules (a bad .gitleaks.toml [extend] resolves to an empty ruleset and the
+      # job goes green while blind). Plant a credential-shaped value assembled at runtime from
+      # two halves -- so no literal secret appears in a tracked file -- and FAIL if gitleaks
+      # does not detect it. Pattern copied from jolarca-compliance's security.yml.
+      - name: Negative control (the scanner must find a planted secret)
+        run: |
+          set -euo pipefail
+          T="$(mktemp -d)"
+          printf '%s%s\n' 'ghp_' '1234567890abcdefghij1234567890abcdefghij' > "$T/fixture.txt"
+          if gitleaks dir "$T" --no-banner --redact > /dev/null 2>&1; then
+            echo "::error::NEGATIVE CONTROL FAILED -- gitleaks detected nothing in a planted fixture;" \
+                 "the scan would be a false pass. Not running the real scan."
+            rm -rf "$T"; exit 1
+          fi
+          rm -rf "$T"
+          echo "negative control ok: planted fixture was detected"
+
+      # Real scan: full history (fetch-depth: 0 above) and the working tree.
+      # Measured locally on consent's history before this change was proposed:
+      #   gitleaks git . -> "9 commits scanned", "no leaks found", exit 0
+      - name: Run gitleaks (full history)
+        run: gitleaks git . --no-banner --redact
+      - name: Run gitleaks (working tree)
+        run: gitleaks dir . --no-banner --redact
 
   dependency-review:
     name: Dependency review
