@@ -26,3 +26,7 @@ compliance-relevant change must appear here.
 - fix(ci): `mypy --strict .` → bare `mypy --strict` — path argument overrode `[tool.mypy].files` config, checking 15 files with 16 errors instead of the 4 configured files (audit A-11).
 - fix(ci): `pytest` → `pytest --cov --cov-fail-under=80` — CI was not enforcing the coverage floor (audit A-10).
 - fix: offline chain verifier (`scripts/verify_chain.py`) now handles anonymized records — skips `entry_hash` recomputation for records with `anonymized_at IS NOT NULL` while still verifying `prev_hash` chain continuity.
+
+## mise adoption proposal — 2026-11-03
+
+- Add pinned local runtime selections and a toolchain diagnostic; CI migration and compatibility validation remain pending.
