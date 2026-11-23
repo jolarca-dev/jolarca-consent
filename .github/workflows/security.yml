@@ -44,7 +44,7 @@ jobs:
       # be force-moved, and carried no licence policy. policy/compliance-gates.yml
       # #dependency_scan mandates this exact SHA (v5.0.0, verified to resolve) with
       # fail_on_severity moderate and deny_licenses GPL/AGPL/SSPL.
-      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+      - uses: actions/dependency-review-action@bbc44d14a204704ccc493733616cd1e93a0321ec # v5.0.1
         with:
           fail-on-severity: moderate
           deny-licenses: GPL-2.0, GPL-3.0, AGPL-3.0, SSPL-1.0
